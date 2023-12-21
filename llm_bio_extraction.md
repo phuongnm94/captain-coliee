@@ -7,7 +7,6 @@
     ```cmd
     conda create --name env_llm --file requirements_lm.txt
     conda activate env_llm  
-    pip install --upgrade huggingface_hub
     ```
 3. Following this doc to get access key on huggingface for Llama2 model: https://huggingface.co/meta-llama/Llama-2-70b-hf, or use my private key if u just want to try small times. 
    ```cmd
