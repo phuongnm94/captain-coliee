@@ -55,7 +55,7 @@
       - T5 xxl, rezo shot learning. 
         - input: prompt (q + tat ca A) => chon prompt tu prompt lib, dua tren dev => pick best prompt de eval tren test. 
   - next week:
-    - thu llama-2-chat-hf/llama-2-hf (https://github.com/yingjie7/per_erc/blob/main/src/llm_bio_extraction.md)
+    - thu llama-2-chat-hf/llama-2-hf [code_example](./llm_bio_extraction.md)
     - thu voi `mistral` model from `mistral.ai` (llama2)
     - thu few shot: 
       - tim **dynamic** candidates dua tren sBert
