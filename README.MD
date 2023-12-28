@@ -45,8 +45,9 @@
       - public test R03: 76.94
       - public test2 R04: 77.17
   - next week:
-    - Rerun mono-T5 for enssembling 
-    - features extraction by Llama-2 model. 
+    - Rerun mono-T5 for enssembling (doing -> fix bug confict)
+    - features extraction by Llama-2 model. (todo)
+    - summarize doc and re-ranking by LLMs. (todo)
   
 - Task 4 (Cong, An) 
   - previous week:
