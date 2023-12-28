@@ -45,9 +45,8 @@
       - public test R03: 76.94
       - public test2 R04: 77.17
   - next week:
-    - Rerun mono-T5 for enssembling (doing -> fix bug confict)
-    - features extraction by Llama-2 model. (todo)
-    - summarize doc and re-ranking by LLMs. (todo)
+    - Rerun mono-T5 for enssembling
+    - features extraction by Llama-2 model.
   
 - Task 4 (Cong, An) 
   - previous week:
@@ -65,3 +64,19 @@
 --- 
 ### Meeting on Dec 28, 2023 
     
+Task 3 (Phuong, Dat)
+
+previous week:
+SOTA 2023:
+dev R02: 76.36
+public test R03: 85.52
+private test R04: 75.69
+Baseline (Mckpt setting):
+dev R02: 70.31
+public test R03: 76.94
+public test2 R04: 77.17
+
+next week:
+rerun mono-T5 for enssembling (doing -> fix bug confict)
+features extraction by Llama-2 model. (todo)
+summarize doc and re-ranking by LLMs. (todo)
