@@ -63,7 +63,29 @@
       - tao - samples **fix** candidates, trong samples huong dan cach model infer output. 
 --- 
 ### Meeting on Dec 28, 2023 
-    
+
+Task 1 (Minh)
+
+- Previous week:
+Precision: 0.11526627218934911
+Recall: 0.5860409145607701
+F1: 0.19264240506329114
+    - Method:
+        - using BM25 to rank candidate:
+            - Query = top 20 keyword TF-IDF
+            - Corpus = whole document
+        - Train GNN for link prediction
+            - Node embedding: mean Legal-BERT sentence embeddings
+    - Problem:
+        - train documents $\cap$  test documents $= \empty$
+- TODO next week:
+    - BM25:
+        - Query = chunk contains <FRAGMENT_SUPPRESSED>
+    - GNN: inductive link prediction ?
+    - Other method to increase Precision?
+        - Finetune LLM to classify relevant
+        - CoT LLM to construct the query
+
 Task 3 (Phuong, Dat)
 
 previous week:
