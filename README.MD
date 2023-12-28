@@ -86,6 +86,21 @@ F1: 0.19264240506329114
         - Finetune LLM to classify relevant
         - CoT LLM to construct the query
 
+Task 2 (Hiep)
+- Previous week
+  - SOTA negative sampling:
+    - First, choose top 10 negative samples based on BM25
+    - Then use negative and positive samples to train MonoT5
+    - After training, resample negative samples again with new fine-tuned model
+  - Try negative sampling with other models (ex. LegalBERT): in progress
+  - Check relevance between base cases and entailed fragment, positive paragraphs
+    - The information in entailed fragment can be found in the positive paragraph
+    - Can we find the relevant paragraphs in the base cases and combine with entailed fragment to find the positive paragraph?
+- Next week
+  - Try negative sampling with LegalBert
+  - Check relevance between base cases and entailed fragments
+    - Try Rerank MotoT5 to search for relevant paragraphs in base cases
+
 Task 3 (Phuong, Dat)
 
 previous week:
