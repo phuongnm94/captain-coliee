@@ -144,8 +144,8 @@
     - Few-Shot + CoT prompting: 
       - Ap dụng thêm CoT cho cả 3 ví dụ trên xong ghép lại thành 3-shot cho statute query
       - **Result**:  TestR03: (76%-> 82%), TestR04: (78% -> 83%)
-     Cách xây dựng fewshot + CoT:
-      # Step1: Sinh ra chain tự động từ tập train theo mẫu prompt "Let's think step by step why the answer is ..."
+     ## Cách xây dựng fewshot + CoT:
+      ### Step1: Sinh ra chain tự động từ tập train theo mẫu prompt "Let's think step by step why the answer is ..."
       Ví dụ: 
         ```"Article 5
             (1) A minor must obtain the consent of the minor's legal representative to perform a juridical act;provided, however, that this does not apply to a juridical act for merely acquiring a right or being released from               an obligation.
@@ -157,9 +157,9 @@
             Let't think step by step why the answer is False
             A contract of sales concluded by a minor may be rescinded if it relates to daily life, even if the consent of the parental authority is not obtained. So the final answer is False."
       ```
-      # Step2: Sử dụng Dense Passage Retrival để lựa chọn ra các statute tương tự với query statue.
+      ### Step2: Sử dụng Dense Passage Retrival để lựa chọn ra các statute tương tự với query statue.
 
-      # Step3: Ghép các statute tương đồng lại thành fewShot theo format: "prompting{example1} Let's think step by step \n Answer: {CoT}"
+      ### Step3: Ghép các statute tương đồng lại thành fewShot theo format: "prompting{example1} Let's think step by step \n Answer: {CoT}"
         Ví dụ: 
       ```"Article 5 (1) A minor must obtain the consent of the minor's legal representative to perform a juridical act;provided, however, that this does not apply to a juridical act for merely acquiring a right or being released from an obligation.
           (2) A juridical act in contravention of the provisions of the preceding paragraph is voidable.
@@ -185,7 +185,8 @@
           Question: A juridical act by a minor who is permitted to conduct business may not be rescinded even if the judicial act does not concern the business. True or False?
           Answer: "
     ```
-     =>Ví dụ về answer: "let's think step by step answer: a juridical act in contravention of the provisions of the preceding paragraph is voidable. so the answer is false"
+     
+    =>Ví dụ về answer: "let's think step by step answer: a juridical act in contravention of the provisions of the preceding paragraph is voidable. so the answer is false"
 
   - next week: 
     - share code chung va thu nghiem 
