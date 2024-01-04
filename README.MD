@@ -141,59 +141,9 @@
       - Step1: Sử dụng Dense Retrieval để tính các statute tương tự nhau
       - Step2: Sử dụng top 3 statute giống statute query nhất để làm 3 ví dụ cho few-shot
       - **Result** (+2%)
-    - Few-Shot + CoT prompting: 
+    - Few-Shot + CoT prompting ([t4_CoT_prompting_flow.MD](./t4_CoT_prompting_flow.MD)): 
       - Ap dụng thêm CoT cho cả 3 ví dụ trên xong ghép lại thành 3-shot cho statute query
       - **Result**:  TestR03: (76%-> 82%), TestR04: (78% -> 83%)
-## Cách xây dựng fewshot + CoT:
-### Step1: Sinh ra chain tự động từ tập train theo mẫu prompt "Let's think step by step why the answer is ..."
-
-Ví dụ: 
-```
-    "Article 5
-    (1) A minor must obtain the consent of the minor's legal representative to perform a juridical act;provided, however, that this does not apply to a juridical act for merely acquiring a right or being released from               an obligation.
-    (2) A juridical act in contravention of the provisions of the preceding paragraph is voidable.
-    (3) Notwithstanding the provisions of paragraph (1), a minor may freely dispose of property that the legal representative has permitted the minor to dispose of for a specified purpose, to an extent that falls within             the scope of that purpose. The same applies if the minor disposes of property that the legal representative has permitted the minor to dispose of without specifying a purpose.
-    Question: A contract of sales concluded by a minor may not be rescinded if it relates to daily life, even in cases the consent of the parental authority is not obtained. True or False?
-    Answer: False
-            
-    Let't think step by step why the answer is False
-    A contract of sales concluded by a minor may be rescinded if it relates to daily life, even if the consent of the parental authority is not obtained. So the final answer is False."
-```
-### Step2: Sử dụng Dense Passage Retrival để lựa chọn ra các statute tương tự với query statue.
-
-### Step3: Ghép các statute tương đồng lại thành fewShot theo format: "prompting{example1} Let's think step by step \n Answer: {CoT}"
-
-Ví dụ: 
-```
-    Article 5 (1) A minor must obtain the consent of the minor's legal representative to perform a juridical act;provided, however, that this does not apply to a juridical act for merely acquiring a right or being released from an obligation.
-    (2) A juridical act in contravention of the provisions of the preceding paragraph is voidable.
-    Article 6 (1) A minor who is permitted to conduct one or multiple types of business has the same capacity to act as an adult as far as that business is concerned.
-    Question: A juridical act by a minor who is permitted to conduct business may not be rescinded even if the judicial act does not concern the business. True or False? Let's think step by step 
-    Answer: A juridical act in contravention of the provisions of the preceding paragraph is voidable. So the answer is False
-          
-    Article 6
-    (1) A minor who is permitted to conduct one or multiple types of business has the same capacity to act as an adult as far as that business is concerned.
-    (2) In a case as referred to in the preceding paragraph, if there are grounds that make the minor unable to sustain that business, the legal representative may revoke or limit the permission therefor in accordance with the provisions of Part IV (Relatives).
-    Question: If a minor, after getting permission for carrying a business from his/her statutory agent, performs an act unrelated to the business without getting consent of the statutory agent, that act may not be rescinded. True or False? Let's think step by step 
-    Answer: The minor's statutory agent may revoke or limit the permission therefor in accordance with the provisions of Part IV (Relatives). So the answer is False
-          
-    Article 6
-    (1) A minor who is permitted to conduct one or multiple types of business has the same capacity to act as an adult as far as that business is concerned.
-    (2) In a case as referred to in the preceding paragraph, if there are grounds that make the minor unable to sustain that business, the legal representative may revoke or limit the permission therefor in accordance with the provisions of Part IV (Relatives).
-    Question: A minor who is permitted to carry on one or more kinds of business shall have the same capacity to act as a person of the age of majority as far as such business is concerned. True or False? Let's think step by step 
-    Answer: Article 6 (1) A minor who is permitted to conduct one or multiple types of business has the same capacity to act as an adult as far as that business is concerned. So the answer is True
-          
-    Article 5 (1) A minor must obtain the consent of the minor's legal representative to perform a juridical act;provided, however, that this does not apply to a juridical act for merely acquiring a right or being released from an obligation.
-    (2) A juridical act in contravention of the provisions of the preceding paragraph is voidable.
-    Article 6 (1) A minor who is permitted to conduct one or multiple types of business has the same capacity to act as an adult as far as that business is concerned.
-    Question: A juridical act by a minor who is permitted to conduct business may not be rescinded even if the judicial act does not concern the business. True or False?
-    Answer: "
-```
-     
-Ví dụ về answer: 
-```
-"let's think step by step answer: a juridical act in contravention of the provisions of the preceding paragraph is voidable. so the answer is false"
-```
 
   - next week: 
     - share code chung va thu nghiem 
@@ -203,11 +153,21 @@ Ví dụ về answer:
 
 
 --- 
-### Meeting on Jan 1, 2024
+### Meeting on Jan 4, 2024
 - Task 1 (Minh):
+  - Previous week
+    - [!] Recall score of Bm25 va Tfidf (top 50, 80, 100, 150)?
+    - [!] Su dung MonoT5 fine-tune cap relevant. => Su dung code train cua task 2.
+    - BM25:
+        - Query = chunk contains <FRAGMENT_SUPPRESSED>
+    - GNN: inductive link prediction ?
+    - Other method to increase Precision?
+        - Finetune LLM to classify relevant
+        - CoT LLM to construct the query
+        - 
     - Push Recall higher. Method: BM25. Using different querying strategy
         - Query using all sentences. Each sentence -> K candidates.
-          | K | Coverage | Precision | Recall | F1 |
+          | K (sentences-based)| Coverage | Precision | Recall | F1 |
           | --- | --- | --- | --- | --- |
           | 10 | 0.1112 | 0.0154 | 0.8038 | 0.0303 |
           | 20 | 0.1946 | 0.0094 | 0.8555 | 0.0186 |
@@ -216,14 +176,14 @@ Ví dụ về answer:
           | 120 | 0.5957 | 0.0034 | 0.9554 | 0.0068 |
           | 150 | 0.6548 | 0.0031 | 0.9699 | 0.0063 |
         - Query using chunks of sentences with length ~ 10000 characters:
-          | K | Coverage | Precision | Recall | F1 |
+          | K (sentences-based) | Coverage | Precision | Recall | F1 |
           | --- | --- | --- | --- | --- |
           | 50 | - | 0.0262 | 0.6570 | 0.0504 |
           | 80 | - | 0.0138 | 0.6955 | 0.0271 |
           | 120 | - | 0.0101 | 0.7352 | 0.0199 |
           | 150 | - | 0.0085 | 0.7533 | 0.0168 |
         - Query using fragment suppressed sentences (if exists, else using all sentences)
-          | K | Coverage | Precision | Recall | F1 |
+          | K (sentences-based) | Coverage | Precision | Recall | F1 |
           | --- | --- | --- | --- | --- |
           | 10 | 0.0427 | 0.0351 | 0.7027 | 0.0669 |
           | 20 | 0.0800 | 0.0203 | 0.7605 | 0.0395 |
@@ -240,5 +200,56 @@ Ví dụ về answer:
           | 80 | 0.0657 | 0.0236 | 0.7256 | 0.0457 |
           | 120 | 0.0986 | 0.0165 | 0.7641 | 0.0324 |
           | 150 | 0.1232 | 0.0137 | 0.7906 | 0.0269 |
-    - Next week: 
-      - Using task 2 code, finetune MonoT5 
+  - Next week: 
+    - su dung rank top K theo document (top k most closed documents)
+    - Using task 2 code, finetune MonoT5  (thu voi top 20, 10)
+
+
+- Task 2 (Hiep):
+  - Previous week
+  - Next week 
+    - step1: Fine-tuned Mono T5 1 query case, all case -> get top-k (k=10) for similar case. 
+    - step2: Fine-tuned Mono T5 1 query case, k retrieved case from step 1 -> final model. 
+    - Check relevance between base cases and entailed fragments
+      - Try Rerank MotoT5 to search for relevant paragraphs in base cases
+
+
+- Task 3 (Phuong, Dat) 
+  - previous week: 
+    - optimize hyper-parameters fine-tuned model Bert Japanese. 
+    - Rerun mono-T5 for enssembling  
+    - summarize doc and re-ranking by LLMs.  => dua toan bo articles  / hoac dua tung cai.
+    - Result: 
+        | Setting   |      R02 (dev)     |  R03 (test 1) |  R04 (test 2) |
+        |----------|-------------:|------:|------:|
+        | SOTA 2023 |  76.36| 85.52 | 75.69|
+        | -- |      |
+        | Baseline bertJp (!) (Mckpt) |  69.01   |   77.46   | 73.08 |
+        | Baseline masked-whole-word (!) (Mckpt) |   66.85   |   78.01 | 76.97 |
+        | combination2models (Mckpt) |   69.49  |   78.35 | 77.54 |
+        | -- |     |
+        | Mono T5 (zero)|    ?   |   ? | ? |
+        | Mono T5 (ft)|    ?   |   ? | ? |
+        | -- |     |
+        <!-- | Baseline (Mckpt) |    70.31   |   76.94 |77.17 | -->
+  - next week: 
+    - output of R05 and ranking top 100, (-L) 
+    - prompting FlanT5 xxlarge (ghep cap infer) with fewshot. 
+  
+
+- Task 4 (Cong, An) 
+  - previous week:
+    - [!] Optimize CoT prompting (variant prompting performance checking)
+    - last week result:
+      - Ap dụng thêm CoT cho cả 3 ví dụ trên xong ghép lại thành 3-shot cho statute query
+      - **Result**:  TestR03: (76%-> 82%), TestR04: (78% -> 83%)
+    - result:
+      Update kết quả theo 3-shot_CoT:
+      - R01: 65% -> 82%
+      - R02: 80% -> 88%
+      - R03: 76% -> 87%
+      - R04: 78% -> 88%
+
+  - Next week
+    - [!] thong ke chi tiet ket qua cua cac prompt va performance tuong ung. 
+    - Constrastive learning, tim similar query trong setting fewshot sao cho can bang phan phoi cau tra loi: Answer True/False  
