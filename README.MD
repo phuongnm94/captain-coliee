@@ -220,6 +220,9 @@
     - Rerun mono-T5 for enssembling  
     - summarize doc and re-ranking by LLMs.  => dua toan bo articles  / hoac dua tung cai.
     - Result: 
+- Task 3 (Phuong, Dat) 
+  - previous week: 
+    - Result: 
         | Setting   |      R02 (dev)     |  R03 (test 1) |  R04 (test 2) |
         |----------|-------------:|------:|------:|
         | SOTA 2023 |  76.36| 85.52 | 75.69|
@@ -229,9 +232,10 @@
         | combination2models (Mckpt) |   69.49  |   78.35 | 77.54 |
         | -- |     |
         | Mono T5 (zero)|    ?   |   ? | ? |
-        | Mono T5 (ft)|    ?   |   ? | ? |
+        | Mono T5 (ft)|    68.38   |   81.24 |  60.00 |
         | -- |     |
-        <!-- | Baseline (Mckpt) |    70.31   |   76.94 |77.17 | -->
+        | combination2models+MonoT5_lastyear  |   75.33  |   85.04 | 77.23 |
+        | combination2models+MonoT5   |   75.24  | 84.55 | 77.15  |
   - next week: 
     - output of R05 and ranking top 100, (-L) 
     - prompting FlanT5 xxlarge (ghep cap infer) with fewshot. 
