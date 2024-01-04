@@ -11,4 +11,4 @@ pip install -r requirements.txt
 python fewshot_cot.py
 ```
 
-# Note: You can refer to ipynb files if the source code is hard to undertand!
+# Note: You can refer to ipynb files
