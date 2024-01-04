@@ -1,0 +1,13 @@
+{
+ "{{premise}}\nQuestion: {{hypothesis}} True or False?": 0.8807339449541285,
+ "{{premise}}\nQuestion: {{hypothesis}} True or False? ": 0.8807339449541285,
+ "{{premise}} Based on that information, is the claim: \"{{hypothesis}}\" true or false?": 0.908256880733945,
+ "EXAM\n1. Answer by yes or no.\n\nDocument: {{premise}}\nQuestion: {{hypothesis}}? ": 0.8165137614678899,
+ "{{premise}}\nBased on the previous passage, {{hypothesis}}? ": 0.8440366972477065,
+ "Premise: {{premise}}\n\nHypothesis: {{hypothesis}}\n\nDoes the premise entail the hypothesis? Yes or no ": 0.7798165137614679,
+ "Premise: {{premise}}\nHypothesis: {{hypothesis}}\nIs the hypothesis entailed by the premise? Yes or no ": 0.7981651376146789,
+ "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\nIs this second sentence entailed by the first sentence? Yes or No ": 0.8440366972477065,
+ "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\n\nIf the first sentence is true, then is the second sentence true? True or False ": 0.8440366972477065,
+ "If {{premise}}, can we conclude that \"{{hypothesis}}\"? Yes or No ": 0.8532110091743119,
+ "Premise: \"{{premise}}\" If this premise is true, what does that tell us about whether it entails the hypothesis \"{{hypothesis}}\"?\n\nYes or No ": 0.8256880733944955
+}

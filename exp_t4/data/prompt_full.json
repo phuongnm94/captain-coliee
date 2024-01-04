@@ -1,0 +1,498 @@
+[
+    {
+        "id": 0,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False?"
+    },
+    {
+        "id": 1,
+        "label": [
+            "correct",
+            "incorrect"
+        ],
+        "prompt": "{{premise}} Using only the above description and what you know about the world, \"{{hypothesis}}\" is definitely correct or incorrect?"
+    },
+    {
+        "id": 2,
+        "label": [
+            "always",
+            "never"
+        ],
+        "prompt": "Suppose it's true that {{premise}} Then, is \"{{hypothesis}}\" always or never true?"
+    },
+    {
+        "id": 3,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "{{premise}} Based on the previous passage, is it true that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 4,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "Suppose {{premise}} Can we infer that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 5,
+        "label": [
+            "true",
+            "false"
+        ],
+        "prompt": "{{premise}} Based on that information, is the claim: \"{{hypothesis}}\" true or false?"
+    },
+    {
+        "id": 6,
+        "label": [
+            "always",
+            "never"
+        ],
+        "prompt": "{{premise}}\n\nKeeping in mind the above text, consider: {{hypothesis}} Is this always or never correct?"
+    },
+    {
+        "id": 7,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "Given that {{premise}} Does it follow that {{hypothesis}} Yes or no?"
+    },
+    {
+        "id": 8,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "{{premise}}\n\nQuestion: Does this imply that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 9,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "Given {{premise}} Is it guaranteed true that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 10,
+        "label": [
+            "guaranteed",
+            "impossible"
+        ],
+        "prompt": "Assume it is true that {{premise}}\n\nTherefore, \"{{hypothesis}}\" is guaranteed or impossible?"
+    },
+    {
+        "id": 11,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "{{premise}} Are we justified in saying that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 12,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "Given that {{premise}} Therefore, it must be true that \"{{hypothesis}}\"? Yes or no?"
+    },
+    {
+        "id": 13,
+        "label": [
+            "Yes",
+            "no"
+        ],
+        "prompt": "Given {{premise}} Should we assume that \"{{hypothesis}}\" is true? Yes or no?"
+    },
+    {
+        "id": 14,
+        "label": [
+            "true",
+            "false"
+        ],
+        "prompt": "Take the following as truth: {{premise}}\nThen the following statement: \"{{hypothesis}}\" is true or false?"
+    },
+    {
+        "id": 15,
+        "label": [
+            "CORRECT",
+            "INCORRECT"
+        ],
+        "prompt": "Context: \"{{premise}}\"\n\nQuery: \"{{hypothesis}}\"\n\nBased on the context, the query is CORRECT or INCORRECT?  "
+    },
+    {
+        "id": 16,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False? "
+    },
+    {
+        "id": 17,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Using only the above description and what you know about the world, is \"{{hypothesis}}\" definitely correct? Yes or no? "
+    },
+    {
+        "id": 18,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Based on the previous passage, is it true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 19,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Suppose {{premise}} Can we infer that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 20,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Does it follow that {{hypothesis}} Yes or no? "
+    },
+    {
+        "id": 21,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \n\nQuestion: Does this imply that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 22,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Is it guaranteed true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 23,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Are we justified in saying that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 24,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Therefore, it must be true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 25,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Should we assume that \"{{hypothesis}}\" is true? Yes or no? "
+    },
+    {
+        "id": 26,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False? "
+    },
+    {
+        "id": 27,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Using only the above description and what you know about the world, is \"{{hypothesis}}\" definitely correct? Yes or no? "
+    },
+    {
+        "id": 28,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Based on the previous passage, is it true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 29,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Suppose {{premise}} Can we infer that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 30,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Does it follow that {{hypothesis}} Yes or no? "
+    },
+    {
+        "id": 31,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \n\nQuestion: Does this imply that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 32,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Is it guaranteed true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 33,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Are we justified in saying that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 34,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Therefore, it must be true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 35,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Should we assume that \"{{hypothesis}}\" is true? Yes or no? "
+    },
+    {
+        "id": 36,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False? "
+    },
+    {
+        "id": 37,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Using only the above description and what you know about the world, is \"{{hypothesis}}\" definitely correct? Yes or no? "
+    },
+    {
+        "id": 38,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Based on the previous passage, is it true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 39,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Suppose {{premise}} Can we infer that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 40,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Does it follow that {{hypothesis}} Yes or no? "
+    },
+    {
+        "id": 41,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \n\nQuestion: Does this imply that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 42,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Is it guaranteed true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 43,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} Are we justified in saying that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 44,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given that {{premise}} Therefore, it must be true that \"{{hypothesis}}\"? Yes or no? "
+    },
+    {
+        "id": 45,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Given {{premise}} Should we assume that \"{{hypothesis}}\" is true? Yes or no? "
+    },
+    {
+        "id": 46,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \nQuestion: {{hypothesis}}\nAnswer: "
+    },
+    {
+        "id": 47,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \n\nHaving read that, I wonder {{hypothesis}}? "
+    },
+    {
+        "id": 48,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "Passage: {{premise}}\n\nAfter reading this passage, I have a question: {{hypothesis}}? True or False? "
+    },
+    {
+        "id": 49,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Based on the following passage, {{hypothesis}}? {{premise}}\n\n"
+    },
+    {
+        "id": 50,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}}\nBased on the previous passage, {{hypothesis}}? "
+    },
+    {
+        "id": 51,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}} \n\nHaving read that, could you tell me {{hypothesis}}? "
+    },
+    {
+        "id": 52,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "EXAM\n1. Answer by yes or no.\n\nDocument: {{premise}}\nQuestion: {{hypothesis}}? "
+    },
+    {
+        "id": 53,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "Exercise: read the text and answer the question by True or False.\n\nText: {{premise}}\nQuestion: {{hypothesis}}? "
+    },
+    {
+        "id": 54,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\n\nQ: {{hypothesis}}? True or False? "
+    },
+    {
+        "id": 55,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Text: {{premise}}\n\nAnswer the following yes/no question: {{hypothesis}}? Yes or no? "
+    },
+    {
+        "id": 56,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: {{premise}}\n\nHypothesis: {{hypothesis}}\n\nDoes the premise entail the hypothesis? Yes or no "
+    },
+    {
+        "id": 57,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: {{premise}}\nHypothesis: {{hypothesis}}\nIs the hypothesis entailed by the premise? Yes or no "
+    },
+    {
+        "id": 58,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\nIs this second sentence entailed by the first sentence? Yes or No "
+    },
+    {
+        "id": 59,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\n\nIf the first sentence is true, then is the second sentence true? True or False "
+    },
+    {
+        "id": 60,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "If {{premise}}, can we conclude that \"{{hypothesis}}\"? Yes or No "
+    },
+    {
+        "id": 61,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: \"{{premise}}\" If this premise is true, what does that tell us about whether it entails the hypothesis \"{{hypothesis}}\"?\n\nYes or No "
+    }
+]

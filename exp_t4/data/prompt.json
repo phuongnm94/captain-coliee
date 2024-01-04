@@ -1,0 +1,90 @@
+[
+    {
+        "id": 0,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False?"
+    },
+    {
+        "id": 1,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "{{premise}}\nQuestion: {{hypothesis}} True or False? "
+    },
+    {
+        "id": 2,
+        "label": [
+            "true",
+            "false"
+        ],
+        "prompt": "{{premise}} Based on that information, is the claim: \"{{hypothesis}}\" true or false?"
+    },
+    {
+        "id": 3,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "EXAM\n1. Answer by yes or no.\n\nDocument: {{premise}}\nQuestion: {{hypothesis}}? "
+    },
+    {
+        "id": 4,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "{{premise}}\nBased on the previous passage, {{hypothesis}}? "
+    },
+    {
+        "id": 5,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: {{premise}}\n\nHypothesis: {{hypothesis}}\n\nDoes the premise entail the hypothesis? Yes or no "
+    },
+    {
+        "id": 6,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: {{premise}}\nHypothesis: {{hypothesis}}\nIs the hypothesis entailed by the premise? Yes or no "
+    },
+    {
+        "id": 7,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\nIs this second sentence entailed by the first sentence? Yes or No "
+    },
+    {
+        "id": 8,
+        "label": [
+            "True",
+            "False"
+        ],
+        "prompt": "Sentence 1: {{premise}}\n\nSentence 2: {{hypothesis}}\n\nIf the first sentence is true, then is the second sentence true? True or False "
+    },
+    {
+        "id": 9,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "If {{premise}}, can we conclude that \"{{hypothesis}}\"? Yes or No "
+    },
+    {
+        "id": 10,
+        "label": [
+            "Yes",
+            "No"
+        ],
+        "prompt": "Premise: \"{{premise}}\" If this premise is true, what does that tell us about whether it entails the hypothesis \"{{hypothesis}}\"?\n\nYes or No "
+    }
+]

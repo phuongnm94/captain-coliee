@@ -1,0 +1,6 @@
+transformers
+torch
+accelerate
+bitsandbytes
+sentence-transformers
+beautifulsoup4
