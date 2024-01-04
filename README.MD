@@ -141,7 +141,7 @@
       - Step1: Sử dụng Dense Retrieval để tính các statute tương tự nhau
       - Step2: Sử dụng top 3 statute giống statute query nhất để làm 3 ví dụ cho few-shot
       - **Result** (+2%)
-    - Few-Shot + CoT prompting ([t4_CoT_prompting_flow.MD](./t4_CoT_prompting_flow.MD)): 
+    - Few-Shot + CoT prompting ([t4_CoT_prompting_flow](t4_CoT_prompting_flow.MD)): 
       - Ap dụng thêm CoT cho cả 3 ví dụ trên xong ghép lại thành 3-shot cho statute query
       - **Result**:  TestR03: (76%-> 82%), TestR04: (78% -> 83%)
 
