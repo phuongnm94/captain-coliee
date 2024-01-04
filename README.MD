@@ -218,10 +218,6 @@
   - previous week: 
     - optimize hyper-parameters fine-tuned model Bert Japanese. 
     - Rerun mono-T5 for enssembling  
-    - summarize doc and re-ranking by LLMs.  => dua toan bo articles  / hoac dua tung cai.
-    - Result: 
-- Task 3 (Phuong, Dat) 
-  - previous week: 
     - Result: 
         | Setting   |      R02 (dev)     |  R03 (test 1) |  R04 (test 2) |
         |----------|-------------:|------:|------:|
