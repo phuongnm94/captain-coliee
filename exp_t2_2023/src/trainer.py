@@ -8,8 +8,8 @@ class MonoT5Trainer(Seq2SeqTrainer):
         super().__init__(*args, **kwargs)
 
         self.decoder_input_ids = None
-        self.token_false_id = self.tokenizer.get_vocab()["false"]
-        self.token_true_id  = self.tokenizer.get_vocab()["true"]
+        self.token_false_id = self.tokenizer.get_vocab()["▁false"]
+        self.token_true_id  = self.tokenizer.get_vocab()["▁true"]
 
         self.loss_func = loss_func
 

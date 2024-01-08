@@ -240,7 +240,7 @@ def eval_bm25_end_model(dataset_path, bm25_index_path, ckpt_path=None, top_k=Non
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("model", choices=["bm25", "monot5"])
+    parser.add_argument("--model", choices=["bm25", "monot5"])
     parser.add_argument("-m", "--model_dir", type=str, default="")
     parser.add_argument("-k", "--top_k", type=int, default=None)
     parser.add_argument("--margin", type=float, default=None)
