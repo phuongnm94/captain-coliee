@@ -253,9 +253,11 @@
   - Next week
     - [!] thong ke chi tiet ket qua cua cac prompt va performance tuong ung. 
     - Constrastive learning, tim similar query trong setting fewshot sao cho can bang phan phoi cau tra loi: Answer True/False  
---- 
+
+---
 ### Meeting on Jan 11, 2024
-- Task 1 (Minh)
+
+- Task 1 (Minh):
   - Previous week: 
     - su dung rank top K theo document (top k most closed documents)
       - on documents: K=150
@@ -275,3 +277,51 @@
           Recall: 0.7906137184115524
           F1: 0.03537583458970493
     - Using task 2 code, finetune MonoT5  (thu voi top 20, 10) [PENDING]
+  - next week:
+    - chay ra ket qua step 2 voi monoT5
+      - kq cua hien tai (F1 score) 
+      - kq (+recall score, + F1 scores) cua top K= 30 40 50 
+    - ghep cap q_document vs 1 document trong top K sd LLM (mistral.)
+- Task 2 (Hiep)
+  - previous work:
+    - monoT5 chay ra 5 checkpoint 
+  - next week:
+    - rerank prompt su dung output cua MonoT5. (thu nghiem voi FlanT5-XXl va Mistral)  
+    - thu nghiem nhieu prompt
+- Task 3 (Phuong, Dat):
+  - previous week:  
+    - output of R05 and ranking top 100, (-L) 
+    - prompting FlanT5 xxlarge (ghep cap infer) with fewshot (detail in [t3_prompting.MD](./t3_prompting.MD)). 
+      - rerank prompting 
+      - reasoning (CoT task 4) prompting 
+    - Result: 
+        | Setting   |      R02 (dev)     |  R03 (test 1) |  R04 (test 2) |
+        |----------|-------------:|------:|------:|
+        | SOTA 2023 |  76.36| 85.52 | 75.69|
+        | -- |      |
+        | Baseline bertJp (!) (Mckpt) |  69.01   |   77.46   | 73.08 |
+        | Baseline masked-whole-word (!) (Mckpt) |   66.85   |   78.01 | 76.97 |
+        | **combination2models (Mckpt)** |   69.49  |   78.35 | 77.54 |
+        | -- |     |
+        | Mono T5 (ft Large-10k, zero-3b)|    68.38   |   81.24 |  60.00 |
+        | Mono T5 (prompting) v2 |   71.54   |  79.83 | 58.96  |
+        | -- |     |
+        | combination2models+MonoT5_lastyear  |   **75.33**  |   85.04 | 77.23 |
+        | combination2models+MonoT5   |   75.24  | 84.55 | 77.15  |
+        | **combination2models+MonoT5  v2**   |   76.13  | 85.17 | 78.23  |
+        | -- |     |
+        | combination2models => rerank LLM   |   66.67  | 78.87 | 75.44  |
+        |  rerank LLM + monoT5   |   73.87 | 84.04 | 77.87  |
+        |  **rerank LLM + monoT5  + combination2models** |   75.04 | **85.68** | **79.94**  |
+
+  - next week: 
+    - Dat qua task 4 
+- Task 4 (Cong, An)
+  - previous week:
+    - [!] thong ke chi tiet ket qua cua cac prompt va performance tuong ung. 
+    - Constrastive learning, tim similar query trong setting fewshot sao cho can bang phan phoi cau tra loi: Answer True/False  
+  - next week: 
+    - Thu voi LLM khac: Mistral 8x7b, thu voi prompt tot nhat cu.   
+    - fine-tuning: FlanT5_xx => enssemble?  
+    - fine-tuning chay vs input instruction cua CoT 
+    - idea lm len vu tru 
