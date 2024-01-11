@@ -253,3 +253,25 @@
   - Next week
     - [!] thong ke chi tiet ket qua cua cac prompt va performance tuong ung. 
     - Constrastive learning, tim similar query trong setting fewshot sao cho can bang phan phoi cau tra loi: Answer True/False  
+--- 
+### Meeting on Jan 11, 2024
+- Task 1 (Minh)
+  - Previous week: 
+    - su dung rank top K theo document (top k most closed documents)
+      - on documents: K=150
+        - Average # candidates: 150
+          Precision: 0.014566353187042842
+          Recall: 0.838748495788207
+          F1: 0.028635401902179496
+      - on document chunks:
+        - K = 150
+          Average # candidates: 59.172413793103445
+          Precision: 0.03183937274846366
+          Recall: 0.7232250300842359
+          F1: 0.06099355558938448
+        - K = 300
+          Average # candidates: 113.83385579937304
+          Precision: 0.018092694076501527
+          Recall: 0.7906137184115524
+          F1: 0.03537583458970493
+    - Using task 2 code, finetune MonoT5  (thu voi top 20, 10) [PENDING]
