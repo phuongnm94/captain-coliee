@@ -41,57 +41,60 @@ def split_target(df):
 
 def build_dataset(use_chunk=False, mode='train', n_candidates=50):
 
-    word_tokenizer = nltk.tokenize.WordPunctTokenizer()
-    # file_list = sorted(list(all_data_dict.keys()))
+    # word_tokenizer = nltk.tokenize.WordPunctTokenizer()
+    # # file_list = sorted(list(all_data_dict.keys()))
 
-    file_list = [f for f in os.listdir(f'dataset/c2023/{mode}_files') if f.endswith('.txt')]
-    file_list = sorted(file_list)
+    # file_list = [f for f in os.listdir(f'dataset/c2023/{mode}_files') if f.endswith('.txt')]
+    # file_list = sorted(file_list)
 
-    processed_file_dict = {}
-    for file in [f for f in os.listdir("dataset/processed") if not f.startswith('.')]:
-        processed_file = f"dataset/processed/{file}"
-        with open(processed_file, 'r') as fp:
-            processed_document = fp.read()
-            processed_file_dict[file] = {
-                'sentences': processed_document.split('\n\n'),
-                'processed_document': processed_document
-            }
+    # processed_file_dict = {}
+    # for file in [f for f in os.listdir("dataset/processed") if not f.startswith('.')]:
+    #     processed_file = f"dataset/processed/{file}"
+    #     with open(processed_file, 'r') as fp:
+    #         processed_document = fp.read()
+    #         processed_file_dict[file] = {
+    #             'sentences': processed_document.split('\n\n'),
+    #             'processed_document': processed_document
+    #         }
 
-    chunk_dict = {}
-    for file in file_list:
-        chunks = chunking(processed_file_dict[file]['sentences'])
-        for i, chunk in enumerate(chunks):
-            if len(chunk) > 0:
-                chunk_dict[f"{file}_{i}"] = chunk
+    # chunk_dict = {}
+    # for file in file_list:
+    #     chunks = chunking(processed_file_dict[file]['sentences'])
+    #     for i, chunk in enumerate(chunks):
+    #         if len(chunk) > 0:
+    #             chunk_dict[f"{file}_{i}"] = chunk
 
-    if use_chunk:
-        # bm25 for chunks
-        corpus = []
-        chunk_list = sorted(list(chunk_dict.keys()))
-        for chunk in chunk_list:
-            corpus.append(chunk_dict[chunk])
-        tokenized_corpus = [word_tokenizer.tokenize(doc) for doc in corpus]
-        bm25 = BM25Okapi(tokenized_corpus)
-    else:
-        # bm25 for whole document
-        corpus = []
-        prcessed_list = sorted(file_list)
-        for file in prcessed_list:
-            corpus.append(processed_file_dict[file]['processed_document'])
-        tokenized_corpus = [word_tokenizer.tokenize(doc) for doc in corpus]
-        bm25 = BM25Okapi(tokenized_corpus)
+    # if use_chunk:
+    #     # bm25 for chunks
+    #     corpus = []
+    #     chunk_list = sorted(list(chunk_dict.keys()))
+    #     for chunk in chunk_list:
+    #         corpus.append(chunk_dict[chunk])
+    #     tokenized_corpus = [word_tokenizer.tokenize(doc) for doc in corpus]
+    #     bm25 = BM25Okapi(tokenized_corpus)
+    # else:
+    #     # bm25 for whole document
+    #     corpus = []
+    #     prcessed_list = sorted(file_list)
+    #     for file in prcessed_list:
+    #         corpus.append(processed_file_dict[file]['processed_document'])
+    #     tokenized_corpus = [word_tokenizer.tokenize(doc) for doc in corpus]
+    #     bm25 = BM25Okapi(tokenized_corpus)
 
-    candidate_dicts = {}
+    # candidate_dicts = {}
 
-    for file in tqdm(file_list):
-        query = get_query(file)
-        tokenized_query = word_tokenizer.tokenize(query)
-        results = bm25.get_scores(tokenized_query)
-        max_ids = np.argsort(results)[-n_candidates:]
-        document_candidates = [file_list[idx] for idx in max_ids]
-        candidate_dicts[file] = list(set(document_candidates))
+    # for file in tqdm(file_list):
+    #     query = get_query(file)
+    #     tokenized_query = word_tokenizer.tokenize(query)
+    #     results = bm25.get_scores(tokenized_query)
+    #     max_ids = np.argsort(results)[-n_candidates:]
+    #     document_candidates = [file_list[idx] for idx in max_ids]
+    #     candidate_dicts[file] = list(set(document_candidates))
 
-    data_df = load_data(f'dataset/json/{mode}.json')
+    with open(f'dataset/c2023/bm25_candidates_{mode}.json', 'r') as fp:
+        candidate_dicts = json.load(fp)
+
+    data_df = load_data(f'dataset/{mode}.json')
     data_df = split_target(data_df)
 
     data_df['candidates'] = data_df['source'].apply(lambda x: candidate_dicts[x])
