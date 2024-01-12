@@ -23,8 +23,9 @@ dataset
 2. Run `python generate_query.py --n_keywords 25` to generate TF-IDF keywords for each document.
 3. Split train, dev, test in the file `split_data.ipynb.`
 4. Check out bm25 result in `test_bm25.ipynb`
-5. Finetune  monot5 by running `train.sh` or `python train_monot5.py --config ./configs/monot5-large-10k_hns.json` 
-6. Eval monot5: [PENDING]
+5. Using LLMs to get summary of the documents in `summary.ipynb`
+6. Finetune  monot5 by running `train.sh` or `python train_monot5.py --config ./configs/monot5-large-10k_hns.json` 
+7. Eval monot5: [PENDING]
 
 # LLMs pair-wise
 [PENDING]
