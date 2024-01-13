@@ -1,0 +1,25 @@
+{
+    "model_class": "monot5",
+    "base_model": "castorini/monot5-large-msmarco-10k",
+
+    "dataset_path": "datasets/COLIEE2023/Task2/data_org",
+    "bm25_index_dir": "./data/bm25_indexes/coliee_task2/data_org",
+    "training_samples": "",
+    "train_uncased": false,
+    "negative_sampling_strategy": "hard",
+    "num_pairs_per_batch": 5,
+    "enhanced_weight": [1.1, 2.5],
+    "num_msmarco_pairs_per_batch": 1,
+
+    "per_device_train_batch_size": 2,
+    "gradient_accumulation_steps": 8,
+    "weight_decay": 5e-4,
+    "learning_rate": 3e-4,
+    "n_epochs": 8,
+    "warmup_ratio": 0.1,
+    "optim": "adafactor",
+    "label_smoothing_factor": 0,
+    "sortish_sampler": false,
+    "fp16": false,
+    "loss_fn": "weighted_cross_entropy"
+}
