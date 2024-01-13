@@ -72,7 +72,6 @@ for file in processed_file_dict.keys():
 count_vec = CountVectorizer(stop_words=stopwords)
 word_count_vector = count_vec.fit_transform(docs)
 
-
 tfidf_transformer=TfidfTransformer(smooth_idf=True,use_idf=True)
 tfidf_transformer.fit(word_count_vector)
 
@@ -86,7 +85,7 @@ def extract_query(doc, n_keywords):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n_keywords", type=int)
+    parser.add_argument("--n_keywords", type=int, default=25)
     args = parser.parse_args()
     
     n_keywords = args.n_keywords
