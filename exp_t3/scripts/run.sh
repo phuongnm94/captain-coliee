@@ -70,4 +70,4 @@ python ${ROOT_DIR}/baseline_src/src/train.py \
 python ${ROOT_DIR}/baseline_src/src/llm_infer.py \
  --data_dir ${ROOT_DIR}/data/ \
  --plm_model_prediction_path ${ROOT_DIR}/settings/Mckpt/models \
- --llm_model_name google/flan-t5-xxl 
+ --llm_model_name google/flan-t5-xxl > ${ENSS_MODELS}/eval_llm.log
