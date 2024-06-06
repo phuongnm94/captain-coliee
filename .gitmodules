@@ -1,0 +1,3 @@
+[submodule "exp_t3/baseline_src"]
+	path = exp_t3/baseline_src
+	url = https://github.com/Nguyen2015/CAPTAIN-COLIEE2023.git
