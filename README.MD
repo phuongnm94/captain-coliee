@@ -50,18 +50,18 @@ This year, our team, CAPTAIN, utilizes the power of LLM for legal information ex
 
     ---
     
-    Results of Task 3 on the development set (using F2 score), the underlined settings play as the main sub-method in the ensemble various methods. The notations $^*$ refer to the runs using LLM with undisclosed training data,  $^\#$ refer to the runs do not use LLM.  
+    Results of Task 3 on the development set (using F2 score), the underlined settings play as the main sub-method in the ensemble various methods. The notations (*)  refer to the runs using LLM with undisclosed training data,  (#)  refer to the runs do not use LLM.  
 
     | Run                                                                      | R02       | R03       | R04       | R05 (private test) |
     | ------------------------------------------------------------------------ | --------- | --------- | --------- | ------------------ |
-    | JNLP.constr-join$^*$                                                     |           |           |           | **74.08**          |
-    | TQM-run1$^\#$                                                            |           |           |           | 71.71              |
-    | NOWJ-25mulreftask-ensemble$^\#$                                          |           |           |           | 71.23              |
-    | JNLP.Mistral$^*$                                                         |           |           |           | **74.08**          |
-    | DatFlt-q+MonoT5$^\#$  [[CAPTAIN 2023](https://arxiv.org/abs/2401.03551)] | **76.36** | 85.52     | 75.69     | _                  |
+    | JNLP.constr-join (*)                                                     |           |           |           | **74.08**          |
+    | TQM-run1 (#)                                                          |           |           |           | 71.71              |
+    | NOWJ-25mulreftask-ensemble (#)                                       |           |           |           | 71.23              |
+    | JNLP.Mistral(*)                                                          |           |           |           | **74.08**          |
+    | DatFlt-q+MonoT5 (#) [[CAPTAIN 2023](https://arxiv.org/abs/2401.03551)] | **76.36** | 85.52     | 75.69     | _                  |
     |                                                                          |           |           |           |                    |
     | *(This work)*                                                            |           |           |           |                    |
-    | Mckpt$^\#$                                                               | 69.49     | 78.35     | 77.54     | 71.35              |
+    | Mckpt (#)                                                              | 69.49     | 78.35     | 77.54     | 71.35              |
     | MonoT5                                                                   | 71.54     | 79.83     | 58.96     | 55.56              |
     | Mckpt --> LLM-re-ranking                                                 | 66.67     | 78.87     | 75.44     | 70.64              |
     |                                                                          |           |           |           |                    |
