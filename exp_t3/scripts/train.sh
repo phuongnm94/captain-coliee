@@ -47,7 +47,7 @@ cd $ROOT_DIR
 mkdir ${ROOT_DIR}/settings/ $SETTING_DIR $MODEL_OUT
 
 echo $CMD
-# eval $CMD
+eval $CMD
   
 
   
