@@ -54,11 +54,12 @@ pip install requirements.txt
 Overall the results can be reproduced by running:
 1. Run `python process.py` to generate processed documents.
 2. Run `python generate_query.py --n_keywords 25` to generate TF-IDF keywords for each document.
-3. Run `split_data.py` to split train, dev, test in the file
-4. Run `test_bm25.py` to checkout BM25's results
+3. Run `split_data.py` to split train, dev, test in the file.
+4. Run `test_bm25.py` to checkout BM25's results.
 5. Using LLMs to get summary of the documents using FLanT5 in `summary.ipynb`. To get the Mistral summary, run `get_mistrial_summarize.py`.
-6. Finetune  monot5 by running `train.sh` or `python train_monot5.py --config ./configs/monot5-large-10k_hns.json` 
-7. To evaluate results, run the `mono_t5.ipynb` notebook
+6. Finetune  monot5 by running `train.sh` or `python train_monot5.py --config ./configs/monot5-large-10k_hns.json`.
+7. To evaluate results, run the `mono_t5.ipynb` notebook.
+8. To generate submission, run the `get_submission` notebook.
 
 ## Results
 ```
