@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import isfile, join
+import os
 
 def get_all_files_from_path(mypath):
     filenames = [join(mypath, f) for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -113,116 +114,63 @@ def readfile(filename):
     data = json.load(f)
     return data
 
-list_prompt = readfile("/home/s2210436/Coliee2024/data/prompt.json") 
-path_file = "/home/s2210436/Coliee2024/data/COLIEE2024statute_data-English/train/"
-import json
+# datas = get_all_files_from_path("../data/COLIEE2024statute_data-English/fewshot")
+from sentence_transformers import SentenceTransformer, util
+query_encoder = SentenceTransformer('facebook-dpr-question_encoder-single-nq-base')
+passage_encoder = SentenceTransformer('facebook-dpr-ctx_encoder-single-nq-base')
 
-def readjsonl(filename="../output/generated_cot/prompt_0/riteval_R04_en_cot.jsonl"):
-    jsonl_content = open(filename, "r", encoding="utf-8")
-    result = [json.loads(jline) for jline in jsonl_content.read().splitlines()]
-    return result
-    
-def load_cot_sample(testfile, path="../output/generated_cot/prompt_0"):
-    files = get_all_files_from_path(path)
+def dpr(testfile, path="../data/COLIEE2024statute_data-English/fewshot"):
+    datas = get_all_files_from_path(path)
     corpus = []
-    prompts = []
+    content = []
     labels = []
-    contents = []
-    cots = []
-    for file in files:
-        if testfile in file:
+    for data in datas:
+        if testfile in data:
             continue
-        data = readjsonl(file)
+        data = load_samples(data)
         for item in data:
-            corpus.append(item["result"])
-            contents.append(item["content"])
-            prompts.append(item["prompt"])
-            cots.append(item["cot"].split(".")[0]+".")
-            labels.append(item["label"])
-    return corpus, prompts, labels, contents, cots
+            # corpus.append(item["result"].replace("\n", " ").strip())
+            corpus.append(item["result"].strip())
+            content.append(item["content"].strip().replace(".", ""))
+            labels.append(item["label"].strip())
+    print(len(corpus))
+    retrival_passage_embeddings = passage_encoder.encode(corpus)
+    content_passage_embeddings = passage_encoder.encode(content)
+    return corpus, content, labels, retrival_passage_embeddings, content_passage_embeddings
 
+from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM
+import torch
 
-def fewshot_cot_prompting(indexes, prompts, labels, cots):
+model_name = "google/flan-t5-xxl"
+cache_dir = "/home/congnguyen/drive/.cache"
+# cache_dir = ".cache"
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+model = AutoModelForSeq2SeqLM.from_pretrained(
+		model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
+	)
+
+from tqdm import tqdm
+
+def format_output(text):
+	CLEANR = re.compile('<.*?>') 
+	cleantext = re.sub(CLEANR, '', text)
+	return cleantext.strip().lower()
+    
+def few_shot_prompting(indexes, corpus, content, labels, prompt_template):
     result = ""
     for i in indexes:
-        if "true or false" in prompts[i].lower():
-            answer = "True"
-            if "N" == labels[i]:
-                answer = "False"
-        else:
-            answer = "Yes"
-            if "N" == labels[i]:
-                answer = "No"
-        # prompt = prompt_template.replace("{{premise}}", corpus[i]).replace('{{hypothesis}}', content[i]).replace('{{answer}}', answer)
-        prompt = prompting(prompts[i], cots[i], answer)
+        answer = "Yes"
+        if "N" == labels[i]:
+            answer = "No"
+        prompt = prompt_template.replace("{{premise}}", corpus[i]).replace('{{hypothesis}}', content[i]).replace('{{answer}}', answer)
         result += prompt
     return result
     
-def prompting(text, cot, answer):
-    return text.split("\nAnswer: ")[0] + " Let's think step by step \nAnswer: "+ cot +" So the answer is " + answer+"\n\n"
-    # return "### Instructs: "+text.split("\nAnswer: ")[0] + "\n### Response: "+ cot
-
-# corpus, prompts, labels, contents, cots = load_cot_sample("/home/s2210436/Coliee2024/output/generated_cot/prompt_0")
-from sentence_transformers import SentenceTransformer, util
-import torch
-def dpr(corpus):
-    passage_encoder = SentenceTransformer('facebook-dpr-ctx_encoder-single-nq-base')
-    passage_embeddings = passage_encoder.encode(corpus)
-    query_encoder = SentenceTransformer('facebook-dpr-question_encoder-single-nq-base')
-    return passage_embeddings, query_encoder
-
-def predict(model, tokenizer, path_file, prompt_path, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
-    for file in files:
-        test_file = path_file+file+".xml"
-        f = open(path_file+file+".txt", "w", encoding="utf-8")
-        data = load_samples(test_file)
-        
-        acc = {}
-        for template_prompt in list_prompt:
-            idx = template_prompt["id"]
-            template_prompt = template_prompt["prompt"]
-            corpus, prompts, labels, contents, cots = load_cot_sample(file, f"{prompt_path}/prompt_"+str(idx))
-            passage_embeddings, query_encoder = dpr(corpus)
-            print(len(corpus))
-            result = []
-            count = 0
-            for item in tqdm(data):
-                premise = item["result"]
-                label = item["label"]
-                hypothesis = item["content"]
-                #Important: You must use dot-product, not cosine_similarity
-                query_embedding = query_encoder.encode(premise)
-                scores = util.dot_score(query_embedding, passage_embeddings)
-                indexes = torch.topk(scores, 3).indices[0]
-                prompt = fewshot_cot_prompting(indexes, prompts, labels, cots)
-                if "true or false" in template_prompt.lower():
-                    text = template_prompt.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis) +"\nAnswer: True or False"
-                else:
-                    text = template_prompt.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis) +"\nAnswer: Yes or No"
-                text = prompt+text
-                if count < 5:
-                    print(text)
-                    print("===================================")
-                inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
-                outputs = model.generate(inputs, max_new_tokens=256)
-                output_text = format_output(tokenizer.decode(outputs[0]).replace(text, "").split("\n")[-1])
-                # print(output_text)
-                # print("===================================")
-                if "yes" in output_text or "true" in output_text:
-                    output_text = "Y"
-                else:
-                    output_text = "N"
-                # print("Predict: ", output_text, " Label: ", label)
-                if output_text == label:
-                    count+=1
-                # print("predict label: ", output_text, "label: ", label)
-            # print("=======================================")
-            # print(template_prompt)
-            # print(count, "/", len(data))
-            acc.update({template_prompt: count/len(data)})
-            print(acc)
-        writefile(acc, output+file+".json")
-        f.close()
+path_file = "../data/COLIEE2024statute_data-English/fewshot/"
+list_prompt = readfile("../data/prompt4.json")
+def prompting(premise, hypothesis, template=None):
+    text = template.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis)
+    return text
 
 def writefile(data, filename):
     # Serializing json
@@ -231,17 +179,73 @@ def writefile(data, filename):
     with open(filename, "w") as outfile:
         outfile.write(json_object)
         
-from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM
-import torch
+def few_shot_prompting(indexes, corpus, content, labels, prompt_template):
+    result = ""
+    for i in indexes:
+        if "true or false" in prompt_template.lower():
+            answer = "True"
+            if "N" == labels[i]:
+                answer = "False"
+        else:
+            answer = "Yes"
+            if "N" == labels[i]:
+                answer = "No"
+        prompt = prompt_template.replace("{{premise}}", corpus[i]).replace('{{hypothesis}}', content[i]).replace('{{answer}}', answer)
+        result += prompt
+    return result
 
-model_name = "google/flan-t5-xxl"
-cache_dir = "/home/s2210436/.cache"
-tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-model = AutoModelForSeq2SeqLM.from_pretrained(
-		model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
-	)
-    
-# testfiles = ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"]
-testfiles = ["riteval_R04_en"]
-prompt_path = "/home/s2210436/Coliee2024/output/generated_cot"
-predict(model, tokenizer, path_file, prompt_path, testfiles, "/home/s2210436/Coliee2024/output/fewshot_cot/newpromt_")
+def predict(model, tokenizer, path_file, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
+    for file in files:
+        test_file = path_file+file+".xml"
+        data = load_samples(test_file)
+        corpus, content, labels, retrival_passage_embeddings, content_passage_embeddings = dpr(file)
+        acc = {}
+        for template_prompt in list_prompt:
+            idx = template_prompt["id"]
+            out_path = output+f"prompt_{idx}/"
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+            f_result = open(out_path+file+"_acc.txt", "w", encoding="utf-8")
+            f_prompt = open(out_path+file+"_prompt.txt", "w", encoding="utf-8")
+            template_prompt = template_prompt["prompt"]
+            query_prompt = template_prompt+"\nAnswer: "
+            prompt_template = template_prompt+"\nAnswer: {{answer}}\n\n"
+            
+            result = []
+            count = 0
+            for item in tqdm(data):
+                label = item["label"]
+                hypothesis = item["content"]
+                premise = item["result"]
+                id = item["index"]
+                few_shot = ""
+                #Important: You must use dot-product, not cosine_similarity
+                query_embedding = query_encoder.encode(premise)
+                scores = util.dot_score(query_embedding, retrival_passage_embeddings)
+                indexes = torch.topk(scores, 3).indices[0]
+                few_shot = few_shot_prompting(indexes, corpus, content, labels, prompt_template)
+                text = few_shot + prompting(premise, hypothesis, query_prompt)
+                #############################################
+                inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
+                outputs = model.generate(inputs, max_new_tokens=10)
+                output_text = format_output(tokenizer.decode(outputs[0]).replace(text, "").split("\n")[-1])
+                if count < 1:
+                    print(text)
+                    print(output_text)
+                if "yes" in output_text or "true" in output_text:
+                    output_text = "Y"
+                else:
+                    output_text = "N"
+                f_result.write(id+"\t"+output_text+"\t"+label+"\n")
+                if output_text == label:
+                    f_prompt.write(id+": "+text+output_text+"\t"+label+"\n++++++++++++++++++++++++++++++\n")
+                    count+=1
+                else:
+                    f_prompt.write(id+": "+text+output_text+"\t"+label+"\n------------------------------\n")
+            acc.update({template_prompt: count/len(data)})
+        writefile(acc, out_path+file+".json")
+
+testfiles = ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"]
+# testfiles = ["riteval_R04_en"]
+
+predict(model, tokenizer, path_file, testfiles, "../output/fewshot_detail/")

@@ -132,11 +132,12 @@ def format_output(text):
 
 def prompting(premise, hypothesis, template=None):
     text = template.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis)
-    return text+"\n\nLet's think step by step\n"
+    # return text+"\n\nLet's think step by step\n"
+    return text
 
-list_prompt = readfile("/home/congnguyen/drive/Coliee2024/data/prompt.json")
+list_prompt = readfile("/home/congnguyen/drive/Coliee2024/data/prompt3.json")
 
-path_file = "/home/congnguyen/drive/Coliee2024/data/COLIEE2024statute_data-English/train/"
+path_file = "/home/congnguyen/drive/Coliee2024/data/COLIEE2024statute_data-English/fewshot/"
 
 def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/cot/newpromt_"):
     for file in files:
@@ -145,6 +146,7 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
         
         acc = {}
         for template_prompt in list_prompt:
+            idx_prompt = template_prompt["id"]
             template_prompt = template_prompt["prompt"]
             print(template_prompt)
             result = []
@@ -177,4 +179,4 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
         writefile(acc, output+file+".json")
 
 if __name__=="__main__":
-    predict(model, tokenizer, ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], "../output/cot/newpromt_")
+    predict(model, tokenizer, ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], "../output/zeroshot/promt_idx_prompt")

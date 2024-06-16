@@ -1,24 +1,6 @@
 from os import listdir
 from os.path import isfile, join
 
-from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM
-import torch
-import ujson
-
-path_file = "/home/s2210436/Coliee2024/data/COLIEE2024statute_data-English/fewshot/"
-myfiles = [f.replace(".xml", "") for f in listdir(path_file) if isfile(join(path_file, f))]
-print(myfiles)
-
-model_name = "google/flan-t5-xxl"
-cache_dir = "/home/s2210436/.cache"
-tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-model = AutoModelForSeq2SeqLM.from_pretrained(
-		model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
-	)
-
-from os import listdir
-from os.path import isfile, join
-
 def get_all_files_from_path(mypath):
     filenames = [join(mypath, f) for f in listdir(mypath) if isfile(join(mypath, f))]
     return filenames
@@ -26,7 +8,6 @@ def get_all_files_from_path(mypath):
 from bs4 import BeautifulSoup
 import re
 import json
-import os
 
 def get_article(articles):
     result = {}
@@ -63,25 +44,6 @@ def build_test(filename):
 def write_json(filename, data):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
-from tqdm import tqdm
-
-def prompting(premise, hypothesis, label, template=None):
-    if "true" in template.lower():
-        answer = "True"
-        if "N" in label:
-            answer = "False"
-    else:
-        answer = "Yes"
-        if "N" in label:
-            answer = "No"
-    text = template.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis)
-    return text+"\nLet't think step by step "
-def write_cot(result, filename):
-    data = [ujson.dumps(line, escape_forward_slashes=False) for line in result]
-    with open(filename, "w", encoding="utf-8") as f:
-        for line in data:
-            f.write(line+'\n')
 
 import xml.etree.ElementTree as Et
 import glob
@@ -144,48 +106,68 @@ from tqdm import tqdm
 def format_output(text):
 	CLEANR = re.compile('<.*?>') 
 	cleantext = re.sub(CLEANR, '', text)
-	return cleantext.strip()
+	return cleantext.strip().lower()
 
 def readfile(filename):
     f = open(filename)
     data = json.load(f)
     return data
 
-list_prompt = readfile("/home/s2210436/Coliee2024/data/prompt4.json")
-import copy
+def load_jsonl(file):
+    with open(file) as f:
+        data = [json.loads(line) for line in f]
+    return data
+f = open("../data/COLIEE2024statute_data-English/text/civil_code_en-1to724-2.txt", "r")
 
-def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/cot/newpromt_"):
-    for file in files:
-        test_file = path_file+file+".xml"
-        print(test_file)
-        data = load_samples(test_file)
-        
-        acc = {}
-        for prompt in list_prompt:
-            template_prompt = prompt["prompt"]
-            idx = prompt["id"]
-            print(template_prompt)
-            result = []
-            count = 0
-            for item in tqdm(data):
-                label = item["label"]
-                hypothesis = item["content"]
-                premise = item["result"]
-                #Important: You must use dot-product, not cosine_similarity
-                text = prompting(premise, hypothesis, label, template_prompt)
-                inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
-                outputs = model.generate(inputs, max_new_tokens=256)
-                output_text = format_output(tokenizer.decode(outputs[0]).replace(text, "").split("\n")[-1])
-                item.update({"prompt": text})
-                item.update({"cot": output_text})
-                result.append(item)
-                if count < 3:
-                    print(text)
-                    print(output_text)
-                    count += 1
-            if not os.path.exists(output+f"prompt_{idx}"):
-	            os.makedirs(output+f"prompt_{idx}")
-            write_cot(result, output+f"prompt_{idx}/"+file+f"_cot.jsonl")
+articles_list = []
+articles = {}
+pre_art = ""
+result = ""
+for line in f:
+    line = line.strip()
+    if line.split()[0] == "Article":
+        if result != "":
+            articles_list.append(result.strip().replace("  ", " "))
+            articles.update({result.strip().split("  ")[0]: result.strip().replace("  ", " ")})
+            result = line+" "
+        else:
+            result += line+" "
+    elif line[0] == "(":
+        if line[1].isupper():
+            continue
+        else:
+            result += line+" "
 
-if __name__=="__main__":
-    predict(model, tokenizer, myfiles, "/home/s2210436/Coliee2024/output/cot/")
+f.close()
+# articles
+import json
+def write_json(filename, data):
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+model_name = "Qwen/Qwen-72B-Chat"
+cache_dir = "/home/congnguyen/drive/.cache"
+# cache_dir = ".cache"
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers.generation import GenerationConfig
+import torch
+
+# Note: The default behavior now has injection attack prevention off.
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen-72B-Chat", cache_dir=cache_dir, trust_remote_code=True)
+# device_map="auto", 
+model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen-72B-Chat", cache_dir=cache_dir, device_map="auto", 
+                                             torch_dtype=torch.float16, trust_remote_code=True, load_in_4bit=True).eval()
+                                
+
+prompt = "'{{text}}'. Analyze the structure following main premise, exception of each rule."
+result_art = {}
+# history = "Main Clause: A juridical person is not formed other than pursuant to the provisions of this Code or other laws.\nException Clauses:None"
+for art in articles:
+    result_art.update({art: "Error OOM!"})
+    text = prompt.replace("{{text}}", articles[art].strip())
+    try:
+        response, history = model.chat(tokenizer, text, history=None)
+        print(response)
+        result_art.update({art: response})
+    except:
+        write_json("../data/COLIEE2024statute_data-English/text/result_art_fujisan.json", result_art)
