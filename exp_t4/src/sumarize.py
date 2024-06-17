@@ -76,7 +76,7 @@ def prompting(premise, hypothesis, label, template=None):
         if "N" in label:
             answer = "No"
     text = template.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis)
-    return text+"\nLet't think step by step "
+    return text
 def write_cot(result, filename):
     data = [ujson.dumps(line, escape_forward_slashes=False) for line in result]
     with open(filename, "w", encoding="utf-8") as f:
@@ -152,6 +152,7 @@ def readfile(filename):
     return data
 
 list_prompt = readfile("/home/s2210436/Coliee2024/data/prompt4.json")
+list_prompt[0]["prompt"] = 'Summarize this sentence: "{{premise}}"\nApproach: Issue, rule, application, conclusion.'
 import copy
 
 def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/cot/newpromt_"):
@@ -168,16 +169,18 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
             result = []
             count = 0
             for item in tqdm(data):
-                label = item["label"]
+                label = "None"
+                if "label" in item:
+                    label = item["label"]
                 hypothesis = item["content"]
-                premise = item["result"]
+                premise = item["result"].replace("\n", " ")
                 #Important: You must use dot-product, not cosine_similarity
                 text = prompting(premise, hypothesis, label, template_prompt)
                 inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
                 outputs = model.generate(inputs, max_new_tokens=256)
                 output_text = format_output(tokenizer.decode(outputs[0]).replace(text, "").split("\n")[-1])
                 item.update({"prompt": text})
-                item.update({"cot": output_text})
+                item.update({"sum": output_text})
                 result.append(item)
                 if count < 3:
                     print(text)
@@ -185,7 +188,7 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
                     count += 1
             if not os.path.exists(output+f"prompt_{idx}"):
 	            os.makedirs(output+f"prompt_{idx}")
-            write_cot(result, output+f"prompt_{idx}/"+file+f"_cot.jsonl")
+            write_cot(result, output+f"prompt_{idx}/"+file+f"_sum.jsonl")
 
 if __name__=="__main__":
-    predict(model, tokenizer, myfiles, "/home/s2210436/Coliee2024/output/cot/")
+    predict(model, tokenizer, myfiles, "/home/s2210436/Coliee2024/output/sum/")
