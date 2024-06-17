@@ -55,7 +55,7 @@ def create_bm25_indexes(args):
 
         subprocess.run(
             [
-                "../bin/python", # Your python directory
+                "python", # Your python directory
                 "-m",
                 "pyserini.index",
                 "-collection",
