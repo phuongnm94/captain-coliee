@@ -185,3 +185,10 @@ for en_jp in ["en"]:
 	# Write accuracy results
 	accuracy_result_path = f"{args.output_folder}/accuracy2/{args.model_name.split('/')[-1]}_results_{en_jp}_{args.setting_data}{args.file}.json"
 	write_dict_to_json_file(results, accuracy_result_path)
+
+import argparse
+if __name__ =="__main__":
+    parser = argparse.ArgumentParser('_')
+    parser.add_argument('--inference-file', type=str, required=True)
+    parser.add_argument('--reference-file', type=str, required=True)
+    args = parser.parse_args()

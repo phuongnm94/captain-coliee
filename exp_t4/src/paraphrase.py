@@ -23,3 +23,10 @@ outputs = model.generate(
 for output in outputs:
     line = tokenizer.decode(output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
     print(line)
+
+import argparse
+if __name__ =="__main__":
+    parser = argparse.ArgumentParser('_')
+    parser.add_argument('--inference-file', type=str, required=True)
+    parser.add_argument('--reference-file', type=str, required=True)
+    args = parser.parse_args()

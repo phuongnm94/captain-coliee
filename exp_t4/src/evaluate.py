@@ -35,3 +35,10 @@ if __name__=="__main__":
             if ref_data[k[0]] == k[1]:
                 count += 1
     print(count / len(ref_data))
+
+import argparse
+if __name__ =="__main__":
+    parser = argparse.ArgumentParser('_')
+    parser.add_argument('--inference-file', type=str, required=True)
+    parser.add_argument('--reference-file', type=str, required=True)
+    args = parser.parse_args()

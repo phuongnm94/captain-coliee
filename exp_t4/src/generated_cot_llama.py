@@ -1,13 +1,15 @@
 from os import listdir
 from os.path import isfile, join
 
-from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM,BitsAndBytesConfig,AutoModelForCausalLM
 import torch
 import ujson
 import utils.utils as ult
 import os
+from tqdm import tqdm 
 
-from tqdm import tqdm
+
+
 
 
 def prompting(premise, hypothesis, label, template=None):
@@ -20,7 +22,7 @@ def prompting(premise, hypothesis, label, template=None):
         if "N" in label:
             answer = "No"
     text = template.replace("{{premise}}", premise).replace("{{hypothesis}}", hypothesis)
-    return text
+    return text+"\nAnswer: "+answer+"\nLet't think step by step why the answer is "+answer+"\n\nThe answer is "+answer+" because "
 
 def write_cot(result, filename):
     data = [ujson.dumps(line, escape_forward_slashes=False) for line in result]
@@ -28,19 +30,10 @@ def write_cot(result, filename):
         for line in data:
             f.write(line+'\n')
 
-def format_first_line(text):
-    lines = text.split("\n")
-    results = []
-    for line in lines:
-        if line[0] == "":
-            continue
-        if line[0] == "(" and line[-1] == ")":
-            continue
-        results.append(line)
-    return "\n".join(results)
 
 
 
+import copy
 
 def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/cot/newpromt_"):
     for file in files:
@@ -56,18 +49,21 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
             result = []
             count = 0
             for item in tqdm(data):
-                label = "None"
-                if "label" in item:
-                    label = item["label"]
+                label = item["label"]
                 hypothesis = item["content"]
-                premise = item["result"].replace("\n", " ")
+                premise = item["result"]
                 #Important: You must use dot-product, not cosine_similarity
                 text = prompting(premise, hypothesis, label, template_prompt)
-                inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
-                outputs = model.generate(inputs, max_new_tokens=256)
+
+                conversation=[]
+                conversation.append({"role": "user", "content": text})
+                
+                input_ids = tokenizer.apply_chat_template(conversation, return_tensors="pt")
+                # inputs = tokenizer(text, return_tensors="pt")["input_ids"].cuda()
+                outputs = model.generate(input_ids.cuda(), max_new_tokens=256)
                 output_text = ult.format_output(tokenizer.decode(outputs[0]).replace(text, "").split("\n")[-1])
                 item.update({"prompt": text})
-                item.update({"sum": output_text})
+                item.update({"cot": output_text})
                 result.append(item)
                 if count < 3:
                     print(text)
@@ -75,11 +71,11 @@ def predict(model, tokenizer, files=["riteval_R01_en","riteval_R02_en","riteval_
                     count += 1
             if not os.path.exists(output+f"prompt_{idx}"):
                 os.makedirs(output+f"prompt_{idx}")
-            write_cot(result, output+f"prompt_{idx}/"+file+f"_sum.jsonl")
-            
+            write_cot(result, output+f"prompt_{idx}/"+file+f"_cot.jsonl")
 
 # if __name__=="__main__":
-#     
+#     predict(model, tokenizer, myfiles, "/home/s2320037/Collie/captain-coliee/exp_t4/output/generated_cot_by_llama2_2/")
+
 import argparse
 if __name__ =="__main__":
     parser = argparse.ArgumentParser('_')
@@ -87,17 +83,24 @@ if __name__ =="__main__":
     parser.add_argument('--reference-file', type=str, required=True)
     args = parser.parse_args()
 
-    path_file = "/home/s2210436/Coliee2024/data/COLIEE2024statute_data-English/fewshot/"
+    path_file = "/home/s2320037/Collie/COLIEE2024statute_data-English/train/"
     myfiles = [f.replace(".xml", "") for f in listdir(path_file) if isfile(join(path_file, f))]
+    myfiles.reverse()
+
     print(myfiles)
+    model_name = "meta-llama/Llama-2-7b-chat-hf"
+    access_token = "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"
+    quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16
+            )
+    tokenizer = AutoTokenizer.from_pretrained(model_name,token=access_token,padding_side='left')
+    model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                quantization_config=quantization_config,
+                device_map="auto",
+                token=access_token
+            )
 
-    model_name = "google/flan-t5-xxl"
-    cache_dir = "/home/s2210436/.cache"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-    model = AutoModelForSeq2SeqLM.from_pretrained(
-            model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
-        )
-    list_prompt = ult.readfile("/home/s2210436/Coliee2024/data/prompt4.json")
-    list_prompt[0]["prompt"] = 'Summarize this sentence: "{{premise}}"\nApproach: Issue, rule, application, conclusion.'
-    predict(model, tokenizer, myfiles, "/home/s2210436/Coliee2024/output/sum/")
-
+    list_prompt = ult.readfile("/home/s2320037/Collie/captain-coliee/exp_t4/data/prompt.json")
+    predict(model, tokenizer, myfiles, "/home/s2320037/Collie/captain-coliee/exp_t4/output/generated_cot_by_llama2_2/")
