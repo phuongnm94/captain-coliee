@@ -155,7 +155,11 @@ if __name__ =="__main__":
     path_file = args.data_path
     # list_prompt = ult.readfile("../data/prompt4.json")
     list_prompt = ult.readfile(args.list_prompt_path)
-    testfiles = ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"]
+    # 
+    if args.test_file_path is not None:
+        testfiles= [args.test_file_path]
+    else:
+        testfiles = ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"]
 # testfiles = ["riteval_R04_en"]    
     output_file_path = args.output_file_path
     # predict(model, tokenizer, path_file, testfiles, "../output/fewshot_detail/")

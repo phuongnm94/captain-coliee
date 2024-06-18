@@ -62,10 +62,40 @@ def main(args):
     
 
     strategy = "zeroshot_aug_r32"
-    batch_size = 32
-    prompt_id = 20
-    epochs = 100
-    output_data = f"../output/finetuned/data/{strategy}_lora-flan-t5-xxl_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
+    batch_size = args.batch_size
+    prompt_id = args.prompt_id
+    epochs = args.epochs
+    output_root_path = args.output_path
+    output_data = f"{args.output_data_path}/{strategy}_lora-{args.model_name.repalce("/","_")}_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
+    if not os.path.exists(output_data):
+        os.makedirs(output_data)
+
+    if "zeroshot" in strategy:
+        import shutil
+        # new_path = shutil.copy(f"../data/COLIEE2024statute_data-English/train_full.jsonl", f"{output_data}/train_full.jsonl")
+        # train_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/train")
+        train_path = ult.get_all_files_from_path(args.train_path)
+        out_trainpath = f"{output_data}/train.jsonl"
+
+        # test_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/test")
+        test_path = ult.get_all_files_from_path(args.test_path)
+        out_testpath = f"{output_data}/"
+        xml2json(train_path, out_trainpath)
+        for i in range(len(test_path)):
+            xml2json([test_path[i]], out_testpath)
+    elif "fewshot" in strategy:
+        train_path = ult.get_all_files_from_path(f"{args.fewshot_data_path}")
+        out_trainpath = f"{output_data}/train.jsonl"
+        loadjsonl(train_path, out_trainpath)
+
+        # test_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/test")
+        test_path = ult.get_all_files_from_path(args.test_path)
+        out_testpath = f"{output_data}/"
+        xml2json([test_path[0]], out_testpath)
+        xml2json([test_path[1]], out_testpath)
+        xml2json([test_path[2]], out_testpath)
+        xml2json([test_path[3]], out_testpath)
+
 
     dataset = load_dataset("json", data_files={"train": f"{output_data}/train_full.jsonl", 
                                           "test1": f"{output_data}/riteval_R01_en.jsonl",
@@ -75,38 +105,14 @@ def main(args):
 
     print(dataset)
     
-    if not os.path.exists(output_data):
-        os.makedirs(output_data)
-
-    if "zeroshot" in strategy:
-        import shutil
-        new_path = shutil.copy(f"../data/COLIEE2024statute_data-English/train_full.jsonl", f"{output_data}/train_full.jsonl")
-        train_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/train")
-        out_trainpath = f"{output_data}/train.jsonl"
-
-        test_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/test")
-        out_testpath = f"{output_data}/"
-        xml2json(train_path, out_trainpath)
-        for i in range(len(test_path)):
-            xml2json([test_path[i]], out_testpath)
-    elif "fewshot" in strategy:
-        train_path = ult.get_all_files_from_path(f"../data/finetune_exp/{strategy}/")
-        out_trainpath = f"{output_data}/train.jsonl"
-        loadjsonl(train_path, out_trainpath)
-
-        test_path = ult.get_all_files_from_path("../data/COLIEE2024statute_data-English/test")
-        out_testpath = f"{output_data}/"
-        xml2json([test_path[0]], out_testpath)
-        xml2json([test_path[1]], out_testpath)
-        xml2json([test_path[2]], out_testpath)
-        xml2json([test_path[3]], out_testpath)
 
 
 
-    model_id="google/flan-t5-xxl"
+    # model_id="google/flan-t5-xxl"
+    model_id = args.tokenize_model
 
     # Load tokenizer of FLAN-t5-XL
-    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="/home/congnguyen/drive/.cache")
+    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=args.cache_dir)
 
 
     # The maximum total input sequence length after tokenization.
@@ -151,15 +157,18 @@ def main(args):
     tokenized_dataset = dataset.map(preprocess_function, batched=True, remove_columns=["content", "label", "id"])
     print(f"Keys of tokenized dataset: {list(tokenized_dataset['train'].features)}")
     # save datasets to disk for later easy loading
-    tokenized_dataset["train"].save_to_disk(f"../output/finetuned/data/{output_data}/train")
-    tokenized_dataset["test4"].save_to_disk(f"../output/finetuned/data/{output_data}/eval")
+    # tokenized_dataset["train"].save_to_disk(f"../output/finetuned/data/{output_data}/train")
+    # tokenized_dataset["test4"].save_to_disk(f"../output/finetuned/data/{output_data}/eval")
 
+    tokenized_dataset["train"].save_to_disk(f"{args.output_data_path}/{output_data}/train")
+    tokenized_dataset["test4"].save_to_disk(f"{args.output_data_path}/{output_data}/eval")
 
     # huggingface hub model id
-    model_id = "philschmid/flan-t5-xxl-sharded-fp16"
+    # model_id = "philschmid/flan-t5-xxl-sharded-fp16"
+    model_id = args.model_name
 
     # load model from the hub
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, cache_dir="/home/congnguyen/drive/.cache")
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, cache_dir=args.cache_dir)
 
 
 
@@ -192,11 +201,12 @@ def main(args):
     )
 
 
-    os.environ["WANDB_PROJECT"] = "finetuned-flan-t5-xxl"  # name your W&B project
+    # os.environ["WANDB_PROJECT"] = "finetuned-flan-t5-xxl"  # name your W&B project
+    os.environ["WANDB_PROJECT"] = args.output_name_project  # name your W&B project
     os.environ["WANDB_LOG_MODEL"] = "checkpoint"  # log all model checkpoints
 
 
-    output_dir=f"../output/finetuned/{strategy}_lora-flan-t5-xxl_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
+    output_dir=f"{args.output_path}/{strategy}_lora-flan-t5-xxl_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
 
     # Define training args
     training_args = Seq2SeqTrainingArguments(
@@ -227,7 +237,7 @@ def main(args):
     trainer.train()
 
     # Save our LoRA model & tokenizer results
-    peft_model_id=f"../output/finetuned/{strategy}_peft_results_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
+    peft_model_id=f"{args.output_path}/{strategy}_peft_results_prompt{prompt_id}_batch{str(batch_size)}_epochs{str(epochs)}"
     trainer.model.save_pretrained(peft_model_id)
     tokenizer.save_pretrained(peft_model_id)
 
@@ -235,12 +245,20 @@ def main(args):
 import argparse
 if __name__ =="__main__":
     parser = argparse.ArgumentParser('_')
-    parser.add_argument('--model-name', type=str, required=True)
+    parser.add_argument('--model-name', type=str, required=False)
+    parser.add_argument('--tokenize-model', type=str, required=False)
     parser.add_argument('--cache-dir', type=str, required=False)
-    parser.add_argument('--data-path', type=str, required=True)
-    parser.add_argument('--list-prompt-path', type=str, required=True)
-    parser.add_argument('--test-file-path', type=str, required=True)
-    parser.add_argument('--output-data', type=str, required=True)
-    
+    parser.add_argument('--train-path', type=str, required=False)
+    parser.add_argument('--test-path', type=str, required=False)
+    parser.add_argument('--list-prompt-path', type=str, required=False)
+    parser.add_argument('--test-file-path', type=str, required=False)
+    parser.add_argument('--output-path', type=str, required=False)
+    parser.add_argument('--batch-size', type=str, required=False,default=32)
+    parser.add_argument('--prompt-id', type=int, required=False,default=20)
+    parser.add_argument('--epochs', type=int, required=False,default=100)
+    parser.add_argument('--output-data-path', type=str, required=False)
+    parser.add_argument('--output-name-project', type=str, required=False,default="finetuned-flan-t5-xxl")
+    parser.add_argument('--fewshot-data-path', type=str, required=False)
+    parser.add_argument('--strategy', type=str, required=False)
     args = parser.parse_args()
     main(args)

@@ -4,3 +4,5 @@ accelerate
 bitsandbytes
 sentence-transformers
 beautifulsoup4
+ujson
+shutil

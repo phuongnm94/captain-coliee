@@ -159,7 +159,10 @@ if __name__ =="__main__":
         )
         
     # testfiles = ["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"]
-    testfiles = ["riteval_R04_en"]
+    if args.test_file_path is not None:
+        testfiles = [args.test_file_path]
+    else:
+        testfiles = ["riteval_R04_en"]
     # cot_path = "/home/s2210436/Coliee2024/output/generated_cot"
     cot_path = args.cot_path
     # predict(model, tokenizer, path_file, cot_path, list_prompt,testfiles, "/home/s2210436/Coliee2024/output/fewshot_cot/newpromt_")

@@ -90,7 +90,7 @@ if __name__ =="__main__":
     cache_dir = args.cache_dir
     tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
+        model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_4bit=True
 	)
     output_path = args.output_cot_path
     predict(model, tokenizer,list_prompt ,myfiles, output_path)
