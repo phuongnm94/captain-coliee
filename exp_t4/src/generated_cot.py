@@ -34,7 +34,8 @@ def write_cot(result, filename):
 
 def predict(model, tokenizer,list_prompt, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/cot/newpromt_"):
     for file in files:
-        test_file = path_file+file+".xml"
+        # test_file = path_file+file+".xml"
+        test_file = os.path.join(path_file,file+".xml")
         print(test_file)
         data = ult.load_samples(test_file)
         
@@ -85,12 +86,12 @@ if __name__ =="__main__":
 
     # model_name = "google/flan-t5-xxl"
     model_name = args.model_name
-
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     # cache_dir = "/home/s2210436/.cache"
     cache_dir = args.cache_dir
     tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_4bit=True
+        model_name, device_map="auto", cache_dir=cache_dir, torch_dtype=torch.float16, load_in_8bit=True
 	)
     output_path = args.output_cot_path
     predict(model, tokenizer,list_prompt ,myfiles, output_path)

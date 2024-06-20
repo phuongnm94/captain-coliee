@@ -24,7 +24,7 @@ def dpr(testfile, path="../data/COLIEE2024statute_data-English/fewshot"):
     corpus = []
     content = []
     labels = []
-    for data in da:
+    for data in datas:
         if testfile in data:
             continue
         data = ult.load_samples(data)
@@ -78,11 +78,12 @@ def few_shot_prompting(indexes, corpus, content, labels, prompt_template):
         result += prompt
     return result
 
-def predict(model, tokenizer, path_file, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
+def predict(model, tokenizer, path_file,fewshot_path, files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
     for file in files:
-        test_file = path_file+file+".xml"
+        # test_file = path_file+file+".xml"
+        test_file = os.path.join(path_file,file+".xml")
         data = ult.load_samples(test_file)
-        corpus, content, labels, retrival_passage_embeddings, content_passage_embeddings = dpr(file)
+        corpus, content, labels, retrival_passage_embeddings, content_passage_embeddings = dpr(file,fewshot_path)
         acc = {}
         for template_prompt in list_prompt:
             idx = template_prompt["id"]
@@ -136,6 +137,7 @@ if __name__ =="__main__":
     parser.add_argument('--model-name', type=str, required=True)
     parser.add_argument('--cache-dir', type=str, required=False)
     parser.add_argument('--data-path', type=str, required=True)
+    parser.add_argument('--fewshot-path', type=str, required=True)
     parser.add_argument('--list-prompt-path', type=str, required=False)
     parser.add_argument('--test-file-path', type=str, required=False)
     parser.add_argument('--output-file-path', type=str, required=False)
@@ -163,4 +165,4 @@ if __name__ =="__main__":
 # testfiles = ["riteval_R04_en"]    
     output_file_path = args.output_file_path
     # predict(model, tokenizer, path_file, testfiles, "../output/fewshot_detail/")
-    predict(model, tokenizer, path_file, testfiles, output_file_path)
+    predict(model, tokenizer, path_file,args.fewshot_path, testfiles, output_file_path)

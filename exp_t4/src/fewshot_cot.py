@@ -1,16 +1,11 @@
 from os import listdir
 from os.path import isfile, join
-
+import os
 from sentence_transformers import SentenceTransformer, util
 import torch        
 from transformers import AutoTokenizer, BloomForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM
-from bs4 import BeautifulSoup
-import re
 import json
-
 from tqdm import tqdm
-import xml.etree.ElementTree as Et
-import glob
 import utils.utils as ult
 
 
@@ -68,9 +63,10 @@ def dpr(corpus):
     query_encoder = SentenceTransformer('facebook-dpr-question_encoder-single-nq-base')
     return passage_embeddings, query_encoder
 
-def predict(model, tokenizer, path_file, cot_path, list_prompt,files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
+def predict(model, tokenizer, path_file,fewshot_path, cot_path, list_prompt,files=["riteval_R01_en","riteval_R02_en","riteval_R03_en","riteval_R04_en"], output="../output/accuracy2/newpromt_"):
     for file in files:
-        test_file = path_file+file+".xml"
+        # test_file = path_file+file+".xml"
+        test_file = os.path.join(path_file,file+".xml")
         f = open(path_file+file+".txt", "w", encoding="utf-8")
         data = ult.load_samples(test_file)
         
@@ -140,7 +136,7 @@ if __name__ =="__main__":
     parser.add_argument('--cot-path', type=str, required=False)
     parser.add_argument('--test-file-path', type=str, required=False)
     parser.add_argument('--output-file-path', type=str, required=False)
-
+    parser.add_argument('--fewshot-path', type=str, required=True)
     args = parser.parse_args()
 
     
@@ -166,4 +162,4 @@ if __name__ =="__main__":
     # cot_path = "/home/s2210436/Coliee2024/output/generated_cot"
     cot_path = args.cot_path
     # predict(model, tokenizer, path_file, cot_path, list_prompt,testfiles, "/home/s2210436/Coliee2024/output/fewshot_cot/newpromt_")
-    predict(model, tokenizer, path_file, cot_path, list_prompt,testfiles, args.output_file_path)
+    predict(model, tokenizer, path_file,args.fewshot_path, cot_path, list_prompt,testfiles, args.output_file_path)
