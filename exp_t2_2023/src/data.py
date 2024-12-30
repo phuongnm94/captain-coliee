@@ -72,13 +72,15 @@ def get_task2_data(dataset_path, segment="test"):
 
     corpus_dir = Path(dataset_path)
     root_dir = corpus_dir.parent
-    if segment in ["train", "val"]:
+    if segment == 'train':
         label_data = load_json(root_dir / "train_labels.json")
+    elif segment == 'val':
+        label_data = load_json(root_dir / 'val_labels.json')
     elif segment == "test":
         label_data = load_json(root_dir / "test_labels.json")
     else:
         label_data = load_json(root_dir / "train_labels.json").update(
-            load_json(root_dir / "test_labels.json"))
+            load_json(root_dir / "val_labels.json")).update(load_json(root_dir / 'test_labels.json'))
     cases_dir = sorted(os.listdir(corpus_dir))
     return corpus_dir, cases_dir[start_idx: end_idx], label_data
 
@@ -98,6 +100,8 @@ def get_msmarco_dataset(root_dir):
 
 def build_task2_training_dataset(dataset_path, training_samples_file,
                                  train_uncased=False):
+    print(dataset_path)
+    
     corpus_dir, cases_dir, label_data = get_task2_data(dataset_path, "train")
     training_samples = {}
     if training_samples_file:

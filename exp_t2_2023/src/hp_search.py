@@ -4,12 +4,14 @@ import json
 import time
 import shutil
 import subprocess
+from pathlib import Path
 
 import optuna
 import numpy as np
 
-from eval_monot5 import eval_bm25_end_model
+from src.eval_monot5 import eval_bm25_end_model
 
+root = Path(os.path.realpath(__file__)).parents[1]
 
 def evaluate_ckpts(model_dir, dataset_path, bm25_index_dir, segment="val",
                    eval_all_ckpts=True, config=None, model_class="monot5"):
@@ -43,15 +45,15 @@ with open(sys.argv[ind]) as f:
 config_name = os.path.splitext(os.path.split(sys.argv[ind])[1])[0]
 
 n_trial = int(sys.argv[ind + 1])
-tmp_dir = sys.argv[ind + 2]
+tmp_dir = root/sys.argv[ind + 2]
 val_segment = sys.argv[ind + 3]
 root_dir = sys.argv[ind + 4]
 
 best_ckpt, best_config, past_trials = [0, ""], [0, 0, 0], []
 agg_val_res, agg_test_res = [], []
 
-out_dir = "./train_logs/tuned"
-best_model_dir = f"{out_dir}/{config_name}"
+out_dir = "train_logs/tuned"
+best_model_dir = root/f"{out_dir}/{config_name}"
 os.makedirs(best_model_dir, exist_ok=True)
 
 
@@ -81,12 +83,11 @@ def run_trial(trial):
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
     os.makedirs(tmp_dir)
-    with open(f"{tmp_dir}/train_configs.json", "w") as f:
+    with open(tmp_dir/"train_configs.json", "w") as f:
         json.dump(trial_configs, f)
 
-    cmd = (f"{sys.executable} -u train.py {tmp_dir}/train_configs.json -s {tmp_dir} "
-           f"--root_dir {root_dir} | tee -a {tmp_dir}/log")
-    # cmd = (f"./scripts/tsz/run_training.sh {tmp_dir}/train_configs.json {tmp_dir}")
+    cmd = (f"{sys.executable} -u src/train.py --config_path {tmp_dir/'train_configs.json'} -s {str(tmp_dir)} "
+           f"--root_dir {root_dir} | tee -a {tmp_dir/'log'}")
     try:
         p = subprocess.run(cmd, shell=True)
         if p.returncode != 0:
@@ -101,7 +102,7 @@ def run_trial(trial):
                                      os.path.join(root_dir, configs["dataset_path"]),
                                      configs["bm25_index_dir"],
                                      segment=val_segment,
-                                     model_class=trial_configs["model_class"]
+                                     model_class=trial_configs["model_class"], eval_all_ckpts=False
                                     )
     agg_val_res.append(val_res)
     agg_test_res.append(test_res)
@@ -115,12 +116,8 @@ def run_trial(trial):
         f.write(f"\n[Result] {val_res} - {test_res} - {conf} - {ckpt}")
     return test_res[0]
 
-
 def save_best_model(study, trial):
     model_path = os.path.join(best_model_dir, str(trial.number))
-    # if study.best_trial.number == trial.number:
-    #     shutil.rmtree(best_model_dir, ignore_errors=True)
-    #     shutil.move(tmp_dir, best_model_dir)
     if os.path.exists(tmp_dir):
         if os.path.exists(model_path):
             shutil.rmtree(model_path, ignore_errors=True)
@@ -146,3 +143,6 @@ print("Best ckpt: ", best_ckpt)
 print("Best configs: ", best_config)
 print(f"Mean val: {np.mean(agg_val_res, axis=0)} - Std val: {np.std(agg_val_res, axis=0)}")
 print(f"Mean test: {np.mean(agg_test_res, axis=0)} - Std val: {np.std(agg_test_res, axis=0)}")
+
+with open(root/'outputs/best_configs.txt', 'w') as f:
+    f.write(str(best_config))

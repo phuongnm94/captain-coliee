@@ -1,18 +1,14 @@
 import os
 import argparse
-import itertools
 
 from pathlib import Path
 from collections import defaultdict
-from src.utils import load_txt, segment_document, load_json, save_json
+from src.utils import segment_document, load_json, save_json
 
 import torch
-import optuna
 import numpy as np
 
-from tqdm import tqdm
-from transformers import AutoConfig, AutoTokenizer, AutoModel, \
-    T5ForConditionalGeneration
+from transformers import T5ForConditionalGeneration
 
 from pyserini.search import LuceneSearcher
 from pygaggle.rerank.base import Query, Text
@@ -40,11 +36,11 @@ def predict_bm25(searcher, doc, case):
 def predict_all_bm25(dataset_path, bm25_index_path, eval_segment="test",
                      k1=None, b=None, topk=None):
     searcher = LuceneSearcher(bm25_index_path)
+    
     if k1 and b:
         print(f"k1: {k1}, b: {b}")
         searcher.set_bm25(k1, b)
 
-    # dataset_path = "/home/thanhtc/mnt/datasets/COLIEE2023/Task2/data_org"
     corpus_dir, cases_dir, _ = get_task2_data(dataset_path, eval_segment)
     bm25_scores = {}
     for case in cases_dir:
@@ -223,7 +219,8 @@ def eval_bm25_end_model(dataset_path, bm25_index_path, ckpt_path=None, top_k=Non
         print(f"[{eval_segment}] Best metrics: {best_metric} - {best_config}")
 
         if eval_segment == "val":
-            bm25_test_index_path = "./data/bm25_indexes/coliee_task2/data_org/test"
+            # bm25_test_index_path = "./data/bm25_indexes/coliee_task2/data_org/test"
+            bm25_test_index_path = './data/bm25_indexes/coliee_task2/test'
             bm25_test_scores = predict_all_bm25(dataset_path, bm25_test_index_path, eval_segment="test")
             test_scores = predict_func(dataset_path, ckpt_path, eval_segment="test")
 

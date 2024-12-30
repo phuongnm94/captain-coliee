@@ -4,9 +4,9 @@ import sys
 import json
 import string
 
-os.environ["JAVA_HOME"] = "/home/s2210421/jdk"
-os.environ["PATH"] = ("/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:"
-                      "/usr/bin:/sbin:/bin:/home/s2210421/jdk/bin")
+# os.environ["JAVA_HOME"] = "/home/s2420414/jdk"
+# os.environ["PATH"] = ("/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:"
+#                       "/usr/bin:/sbin:/bin:/home/s2420414/jdk/bin")
 
 sys.path.append("modules/pygaggle")
 
@@ -92,3 +92,51 @@ def segment_document(doc, max_sent_per_segment, stride, max_segment_len=None):
             segment = " ".join(segment.split()[:max_segment_len])
         segments.append(segment)
     return segments
+
+def preprocess_case_data(
+    file_path,
+    max_length=None,
+    min_sentence_length=None,
+    uncased=False,
+    filter_min_length=None,
+):
+    if not os.path.exists(file_path):
+        return None
+
+    text = load_txt(file_path)
+
+    text = (
+        text.strip()
+        .replace("\n", " ")
+        .replace("FRAGMENT_SUPPRESSED", "")
+        .replace("FACTUAL", "")
+        .replace("BACKGROUND", "")
+        .replace("ORDER", "")
+    )
+    if uncased:
+        text = text.lower()
+    text = re.sub("\s+", " ", text).strip()
+    text = " ".join([w for w in text.split() if w])
+
+    cite_number = re.search("\[[0-9]+\]", text)
+    if cite_number:
+        text = text[cite_number.span()[1] :].strip()
+    if filter_min_length:
+        words = text.split()
+        if len(words) <= filter_min_length:
+            return None
+
+    if min_sentence_length:
+        text = filter_document(text, min_sentence_length)
+    if max_length:
+        words = text.split()[:max_length]
+        text = " ".join(words)
+    if not text.endswith("."):
+        text = text + "."
+    return text
+
+
+def format_output(text):
+    CLEANR = re.compile("<.*?>")
+    cleantext = re.sub(CLEANR, "", text)
+    return cleantext.strip().lower()

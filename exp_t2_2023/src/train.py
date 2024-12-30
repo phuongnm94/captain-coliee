@@ -114,7 +114,7 @@ def main():
     parser.add_argument("--config_path", type=str)
     parser.add_argument("-s", "--save_dir", default=None, type=str)
     parser.add_argument("--local_rank", default=0, type=int)
-    parser.add_argument("--root_dir", default="/home/s2210405/codes/coliee/24", type=str)
+    parser.add_argument("--root_dir", default="/home/s2420414/coliee24/captain-coliee/exp_t2_2023", type=str)
     args = parser.parse_args()
 
     config = load_json(args.config_path)
