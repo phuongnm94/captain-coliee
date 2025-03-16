@@ -2,6 +2,7 @@
 
 Recently, the Large Language Models (LLMs) have made a great contribution to massive Natural Language Processing  (NLP) tasks. 
 This year, our team, CAPTAIN, utilizes the power of LLM for legal information extraction tasks of the COLIEE competition. To this end, the LLMs are used to understand the complex meaning of legal documents, summarize the important points of legal statute law articles as well as legal document cases, and find the relations between them and specific legal cases. By using various prompting techniques, we explore the hidden relation between the legal query case and its relevant statute law as supplementary information for testing cases.  The experimental results show the promise of our approach, with first place in the task of legal statute law entailment, competitive performance to the State-of-the-Art (SOTA) methods on tasks of legal statute law retrieval, and legal case entailment in the COLIEE 2024 competition.  
+
 ##  Results: 
 1. **Task 1 : The Legal Case Retrieval task**
                     
@@ -119,6 +120,8 @@ isbn="978-981-97-3076-6"
 MIT-licensed. 
 
 
+## Contact
+Please send an email to NguyenLab@JAIST
 
 
  
