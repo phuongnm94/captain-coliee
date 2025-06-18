@@ -38,9 +38,6 @@ def dpr(testfile, path="../data/COLIEE2024statute_data-English/fewshot"):
     content_passage_embeddings = passage_encoder.encode(content)
     return corpus, content, labels, retrival_passage_embeddings, content_passage_embeddings
 
-
-
-
 def few_shot_prompting(indexes, corpus, content, labels, prompt_template):
     result = ""
     for i in indexes:

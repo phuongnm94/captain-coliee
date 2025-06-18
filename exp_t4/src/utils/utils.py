@@ -159,6 +159,10 @@ def readfile(filename):
     data = json.load(f)
     return data
 
+def load_jsonl(file):
+    with open(file) as f:
+        data = [json.loads(line) for line in f]
+    return data
 
 # data = load_samples("data/en/riteval_R04_en.xml")
 # print(data[0])
